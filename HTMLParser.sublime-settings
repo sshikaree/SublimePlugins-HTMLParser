@@ -1,4 +1,5 @@
 {
 	"spacing1" : " ",
-	"spacing2" : "\n\n"
+	"spacing2" : "\n\n",
+	"do_active" : "false"
 }

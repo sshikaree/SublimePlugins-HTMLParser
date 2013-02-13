@@ -17,8 +17,8 @@
             [
               {
                 "command": "open_file",
-                "args": { "file": "${packages}/HTMLParser/Preferences.sublime-settings" },
-                "caption": "Settings – Default"
+                "args": { "file": "${packages}/HTMLParser/HTMLParser.sublime-settings" },
+                "caption": "HTML Parser Settings"
               },
               {
                 "command": "open_file",
