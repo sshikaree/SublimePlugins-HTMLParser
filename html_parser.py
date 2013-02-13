@@ -4,8 +4,8 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 
 		settings = sublime.load_settings("HTMLParser.sublime-settings")
-		spacing1 = settings.get("spacing1", " ")
-		spacing2 = settings.get("spacing2", "\n\n")
+		self.spacing1 = settings.get("spacing1", " ")
+		self.spacing2 = settings.get("spacing2", "\n\n")
 		# self.view.insert(edit, 0, "Hello, World!")
 		# sublime.message_dialog("Hello!")
 		sublime.status_message('Searching selectors...')
@@ -59,8 +59,8 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 				if not re.compile(r'\.%s(?:\b|\{)' % cl_sel).search(css_text):
 					print cl_sel
 					edit = v.begin_edit()
-					v.insert(edit, length, '\n.' + cl_sel + ' {}')
-					length = length + len(cl_sel) + 5
+					v.insert(edit, length, '\n.' + cl_sel + self.spacing1 + '{' + self.spacing2 +'}')
+					length = length + len(cl_sel) + len(self.spacing1 + '{' + self.spacing2 +'}') + 2
 
 					# v.end_edit()
 
@@ -69,7 +69,7 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 				if not re.compile(r'\#%s(?:\b|\{)' % id_sel).search(css_text):
 					print id_sel
 					edit = v.begin_edit()
-					v.insert(edit, length, '\n#' + id_sel + ' {}')
-					length = length + len(id_sel) + 5
+					v.insert(edit, length, '\n#' + id_sel + self.spacing1 + '{' + self.spacing2 + '}')
+					length = length + len(id_sel) + len(self.spacing1 + '{' + self.spacing2 + '}') + 2
 		if edit:
 			self.view.end_edit(edit)
