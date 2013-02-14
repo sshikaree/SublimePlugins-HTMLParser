@@ -9,8 +9,6 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 		self.spacing2 = settings.get("spacing2", "\n\n")
 		self.do_active = settings.get("do_active", False)
 
-		# global_settings = sublime.load_settings("Preferences.sublime-settings")
-		# self.tab_size = global_settings.get("tab_size", 4)
 
 		self.cssviewlist = self.getCSSViews()
 		self.class_selectors, self.id_selectors = self.getValues()
@@ -68,7 +66,6 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 	def parsCSS(self, selectedview, class_selectors, id_selectors):
 		sublime.status_message('Parsing CSS files...')
 		edit = None
-		# for v in cssveiwlist:
 		v = selectedview
 		css_text = v.substr(sublime.Region(0, v.size()))
 		# length = v.size()
@@ -79,18 +76,15 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 				print cl_sel
 				edit = v.begin_edit()
 				v.insert(edit, length, '\n.' + cl_sel + self.spacing1 + '{' + self.spacing2 +'}')
-				# length = length + len(cl_sel) + len(self.spacing1.replace('\t', self.tab_size*' ') + self.spacing2.replace('\t', self.tab_size*' ')) + 4
-
 				v.end_edit(edit)
 
 
 		for id_sel in id_selectors:
 			if not re.compile(r'\#%s(?:\b|\{)' % id_sel).search(css_text):
-				print id_sel
 				length = v.size()
+				print id_sel
 				edit = v.begin_edit()
 				v.insert(edit, length, '\n#' + id_sel + self.spacing1 + '{' + self.spacing2 + '}')
-				# length = length + len(id_sel) + len(self.spacing1.replace('\t', self.tab_size*' ') + self.spacing2.replace('\t', self.tab_size*' ')) + 4
 				v.end_edit(edit)
 		if self.do_active:
 			sublime.active_window().focus_view(v)
