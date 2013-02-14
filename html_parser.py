@@ -4,11 +4,10 @@ import sublime, sublime_plugin, re, sys
 class HtmlParserCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 
-
 		settings = sublime.load_settings("HTMLParser.sublime-settings")
 		self.spacing1 = settings.get("spacing1", " ")
 		self.spacing2 = settings.get("spacing2", "\n\n")
-		self.do_active = settings.get("do_active", "false")
+		self.do_active = settings.get("do_active", False)
 
 		self.cssviewlist = self.getCSSViews()
 		self.class_selectors, self.id_selectors = self.getValues()
@@ -24,7 +23,7 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 			
 
 		
-		print self.class_selectors, self.id_selectors
+		# print self.class_selectors, self.id_selectors
 
 		
 
@@ -90,7 +89,7 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 				v.end_edit(edit)
 		# if edit:
 		# 	v.end_edit(edit)
-		if self.do_active == "true":
+		if self.do_active:
 			sublime.active_window().focus_view(v)
 
 		sublime.status_message('Done!')

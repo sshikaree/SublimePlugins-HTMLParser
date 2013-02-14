@@ -20,14 +20,30 @@
                 "args": { "file": "${packages}/HTMLParser/HTMLParser.sublime-settings" },
                 "caption": "HTML Parser Settings"
               },
+              { "caption": "-" },
               {
+                "caption": "Key Bindings – Default",
+                "platform": "Linux",
                 "command": "open_file",
-                "args": { "file": "${packages}/User/Auto Encoding for Ruby.sublime-settings" },
-                "caption": "Settings – User"
+                "args": {
+                  "file": "${packages}/HTMLParser/Default (Linux).sublime-keymap"
+                }
               },
               {
-                "command": "open_file_settings",
-                 "caption": "Settings – Syntax Specific – User"
+                "caption": "Key Bindings – Default",
+                "platform": "Windows",
+                "command": "open_file",
+                "args": {
+                  "file": "${packages}/HTMLParser/Default (Windows).sublime-keymap"
+                }
+              },
+              {
+                "caption": "Key Bindings – Default",
+                "platform": "OSX",
+                "command": "open_file",
+                "args": {
+                  "file": "${packages}/HTMLParser/Default (OSX).sublime-keymap"
+                }
               }
             ]
           }
