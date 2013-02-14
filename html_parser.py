@@ -9,6 +9,9 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 		self.spacing2 = settings.get("spacing2", "\n\n")
 		self.do_active = settings.get("do_active", False)
 
+		# global_settings = sublime.load_settings("Preferences.sublime-settings")
+		# self.tab_size = global_settings.get("tab_size", 4)
+
 		self.cssviewlist = self.getCSSViews()
 		self.class_selectors, self.id_selectors = self.getValues()
 
@@ -31,7 +34,7 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 		if val == -1:
 			sys.exit(0)
 		self.selectedview = self.cssviewlist[val]
-		print self.selectedview
+		# print self.selectedview
 		self.parsCSS(self.selectedview, self.class_selectors, self.id_selectors)
 
 	def getValues(self):
@@ -68,14 +71,15 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 		# for v in cssveiwlist:
 		v = selectedview
 		css_text = v.substr(sublime.Region(0, v.size()))
-		length = v.size()
+		# length = v.size()
 		# print css_text
 		for cl_sel in class_selectors:
 			if not re.compile(r'\.%s(?:\b|\{)' % cl_sel).search(css_text):
+				length = v.size()
 				print cl_sel
 				edit = v.begin_edit()
 				v.insert(edit, length, '\n.' + cl_sel + self.spacing1 + '{' + self.spacing2 +'}')
-				length = length + len(cl_sel) + len(self.spacing1 + '{' + self.spacing2 +'}') + 2
+				# length = length + len(cl_sel) + len(self.spacing1.replace('\t', self.tab_size*' ') + self.spacing2.replace('\t', self.tab_size*' ')) + 4
 
 				v.end_edit(edit)
 
@@ -83,12 +87,11 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 		for id_sel in id_selectors:
 			if not re.compile(r'\#%s(?:\b|\{)' % id_sel).search(css_text):
 				print id_sel
+				length = v.size()
 				edit = v.begin_edit()
 				v.insert(edit, length, '\n#' + id_sel + self.spacing1 + '{' + self.spacing2 + '}')
-				length = length + len(id_sel) + len(self.spacing1 + '{' + self.spacing2 + '}') + 2
+				# length = length + len(id_sel) + len(self.spacing1.replace('\t', self.tab_size*' ') + self.spacing2.replace('\t', self.tab_size*' ')) + 4
 				v.end_edit(edit)
-		# if edit:
-		# 	v.end_edit(edit)
 		if self.do_active:
 			sublime.active_window().focus_view(v)
 
