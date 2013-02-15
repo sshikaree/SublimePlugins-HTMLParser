@@ -9,9 +9,8 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 		self.spacing2 = settings.get("spacing2", "\n\n")
 		self.do_active = settings.get("do_active", False)
 
-
 		self.cssviewlist = self.getCSSViews()
-		self.class_selectors, self.id_selectors = self.getValues()
+		self.selectors_list = self.getValues()
 
 		if len(self.cssviewlist) == 0:
 			sys.exit(0)
@@ -20,12 +19,8 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 			sublime.active_window().show_quick_panel(cssfiles, self.setView)
 		elif len(self.cssviewlist) == 1:
 			self.selectedview = self.cssviewlist[0]
-			self.parsCSS(self.selectedview, self.class_selectors, self.id_selectors)
+			self.parsCSS(self.selectedview, self.selectors_list)
 			
-
-		
-		# print self.class_selectors, self.id_selectors
-
 		
 
 	def setView(self, val):
@@ -33,26 +28,30 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 			sys.exit(0)
 		self.selectedview = self.cssviewlist[val]
 		# print self.selectedview
-		self.parsCSS(self.selectedview, self.class_selectors, self.id_selectors)
+		self.parsCSS(self.selectedview, self.selectors_list)
+
 
 	def getValues(self):
 		sublime.status_message('Searching selectors...')
 		selections = self.view.sel()
-		class_patt = re.compile(r'class=\"(.+?)\"')
-		id_patt = re.compile(r'id=\"(.+?)\"')
+		all_patt = re.compile(r'(?:class=\"(.+?)\")|(?:id=\"(.+?)\")')
 
-		class_selectors_set = set()
-		id_selectors_set = set()
+		selectors_list = []
 
 		for sel in selections:
 			selection = self.view.substr(sel)
-			class_selectors = class_patt.findall(selection)
-			for selector in class_selectors:
-				class_selectors_set.update(selector.split(' '))
+			selectors = all_patt.findall(selection)
+			for selector in selectors:
+				# selector[0] - class, if exists
+				# selector[1] - id, if exists
+				if selector[1] != '' and ('#' + selector[1]) not in selectors_list:
+					selectors_list.append(('#' + selector[1]))
 
-			id_selectors_set.update(id_patt.findall(selection))
-		
-		return class_selectors_set, id_selectors_set
+				elif selector[0] != '':
+					for class_sel in selector[0].split(' '):
+						if ('.' + class_sel) not in selectors_list:
+							selectors_list.append('.' + class_sel)		
+		return selectors_list
 
 	def getCSSViews(self):
 		cssviewlist = []
@@ -63,29 +62,19 @@ class HtmlParserCommand(sublime_plugin.TextCommand):
 		return cssviewlist
 
 
-	def parsCSS(self, selectedview, class_selectors, id_selectors):
+	def parsCSS(self, selectedview, selectors_list):
 		sublime.status_message('Parsing CSS files...')
 		edit = None
 		v = selectedview
 		css_text = v.substr(sublime.Region(0, v.size()))
-		# length = v.size()
-		# print css_text
-		for cl_sel in class_selectors:
-			if not re.compile(r'\.%s(?:\b|\{)' % cl_sel).search(css_text):
+		for selector in selectors_list:
+			if not re.compile(r'%s(?:\b|\{)' % selector).search(css_text):
 				length = v.size()
-				print cl_sel
+				print selector
 				edit = v.begin_edit()
-				v.insert(edit, length, '\n.' + cl_sel + self.spacing1 + '{' + self.spacing2 +'}')
+				v.insert(edit, length, '\n' + selector + self.spacing1 + '{' + self.spacing2 +'}')
 				v.end_edit(edit)
 
-
-		for id_sel in id_selectors:
-			if not re.compile(r'\#%s(?:\b|\{)' % id_sel).search(css_text):
-				length = v.size()
-				print id_sel
-				edit = v.begin_edit()
-				v.insert(edit, length, '\n#' + id_sel + self.spacing1 + '{' + self.spacing2 + '}')
-				v.end_edit(edit)
 		if self.do_active:
 			sublime.active_window().focus_view(v)
 
